@@ -62,7 +62,16 @@ docker run -d -p 6379:6379 redis
 ### 6. Ejecuta migraciones y servidor
 
 ```bash
+# Aplica migraciones
 python manage.py migrate
+
+# Crea el superusuario
+python manage.py createsuperuser
+
+# Carga datos de ejemplo
+python manage.py init_dummy_data
+
+# Inicia el servidor
 python manage.py runserver
 ```
 
