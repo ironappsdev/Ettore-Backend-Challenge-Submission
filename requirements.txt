@@ -1,0 +1,6 @@
+Django>=4.2
+djangorestframework>=3.14
+celery>=5.3
+redis>=5.0
+python-dotenv>=1.0
+httpx>=0.24  # Para test de llamadas HTTP
