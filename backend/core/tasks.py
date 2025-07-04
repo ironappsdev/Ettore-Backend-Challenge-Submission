@@ -4,6 +4,8 @@ from .models import Goal, Notification, Recommendation, Measurement
 import logging
 import time
 from .helpers import NotificationHelper, ThresholdHelper
+from .llm import OpenAIClient
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -51,13 +53,23 @@ def create_measurement(user_id, data):
         threshold_helper = ThresholdHelper(measurement.type, measurement.value)
         exceeds_threshold = threshold_helper.is_outside_threshold()
 
-        #TODO: Call LLM
-
-
         if exceeds_threshold:
+            llm_client = OpenAIClient()
+            # Usaremos los ultimos 7 días con un tope de 20 mediciones para el LLM
+            seven_days_ago = datetime.now() - timedelta(days=7)
+            last_measurements = Measurement.objects.filter(
+                user=user,
+                recorded_at__gte=seven_days_ago
+            ).order_by('-recorded_at')[:20]  # Con max de 20 mediciones para el LLM
+            recommendation_text = llm_client.obtener_recomendacion(last_measurements)
+
+            #Save the recommendation
+            recommendation = Recommendation(user=user, model_output=recommendation_text)
+            recommendation.save()
+
             notification_helper = NotificationHelper(user, 
                                                     "Alerta de salud", 
-                                                    f"La medición {measurement.type} está fuera de rango")
+                                                    f"La medición {measurement.type} está fuera de rango.\n\nRecomendación: {recommendation_text}")
             notification_helper.send_notification()
 
         return measurement.id

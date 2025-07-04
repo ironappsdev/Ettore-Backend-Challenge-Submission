@@ -43,7 +43,7 @@ class ThresholdHelper:
         elif self.measurement_type == MeasurementType.DUMMY:
             return 100
         else:
-            return None
+            return 100
 
     def get_lower_threshold(self) -> float:
         if self.measurement_type == MeasurementType.BP_SYS:
@@ -55,7 +55,7 @@ class ThresholdHelper:
         elif self.measurement_type == MeasurementType.DUMMY:
             return 0
         else:
-            return None
+            return 0
 
     def is_above_threshold(self) -> bool:
         upper_threshold = self.get_upper_threshold()
