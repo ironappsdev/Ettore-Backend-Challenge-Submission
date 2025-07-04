@@ -2,14 +2,15 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from core.models import UserProfile, Measurement
+from core.models import UserProfile, Measurement, Recommendation
 from django.contrib.auth.models import User
 from core.serializers import (
     UserSerializer,
     UserProfileSerializer,
     MeasurementSerializer,
+    RecommendationSerializer,
 )
-from .tasks import create_measurement
+from .tasks import create_measurement, create_recommendation
 
 
 # Create your views here.
@@ -42,3 +43,25 @@ class MeasurementViewSet(viewsets.ModelViewSet):
 
         create_measurement.delay(request.user.id, validated_data)
         return Response({'detail': 'Measurement creation scheduled.'}, status=status.HTTP_202_ACCEPTED)
+
+
+class RecommendationViewSet(viewsets.ModelViewSet):
+    queryset = Recommendation.objects.all()
+    serializer_class = RecommendationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+        queryset = self.get_queryset()
+        if user_id is not None:
+            queryset = queryset.filter(user_id=user_id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def create(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id') or request.user.id
+        if user_id is None:
+            return Response({'detail': 'User ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        create_recommendation.delay(user_id)
+        return Response({'detail': 'Recommendation creation scheduled.'}, status=status.HTTP_202_ACCEPTED)

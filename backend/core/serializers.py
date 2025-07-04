@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from core.models import UserProfile, Measurement
+from core.models import UserProfile, Measurement, Recommendation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,4 +20,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class MeasurementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Measurement
+        fields = "__all__"
+
+
+class RecommendationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recommendation
         fields = "__all__"

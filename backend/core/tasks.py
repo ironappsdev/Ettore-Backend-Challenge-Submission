@@ -1,6 +1,6 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
-from .models import Goal, Notification, Recommendation, Measurement
+from .models import Goal, Notification, Recommendation, Measurement, UserProfile
 import logging
 import time
 from .helpers import NotificationHelper, ThresholdHelper
@@ -61,7 +61,12 @@ def create_measurement(user_id, data):
                 user=user,
                 recorded_at__gte=seven_days_ago
             ).order_by('-recorded_at')[:20]  # Con max de 20 mediciones para el LLM
-            recommendation_text = llm_client.obtener_recomendacion(last_measurements)
+            try:
+                user_profile = UserProfile.objects.get(user=user)
+            except UserProfile.DoesNotExist:
+                logger.error(f"UserProfile for user {user_id} not found")
+                raise Exception(f"UserProfile for user {user_id} not found")
+            recommendation_text = llm_client.obtener_recomendacion(user_profile, last_measurements)
 
             #Save the recommendation
             recommendation = Recommendation(user=user, model_output=recommendation_text)
@@ -75,4 +80,42 @@ def create_measurement(user_id, data):
         return measurement.id
     except Exception as e:
         logger.error(f"Unexpected error creating measurement for user {user_id}: {e}")
+        return None
+
+
+@shared_task(max_retries=3)
+def create_recommendation(user_id):
+    """
+    Task para crear una recomendación.
+    """
+    # Simular 1 segundo de espera
+    time.sleep(1)
+
+    if User.objects.filter(id=user_id).exists():
+        user = User.objects.get(id=user_id)
+    else:
+        logger.error(f"User {user_id} not found")
+        raise Exception(f"User {user_id} not found")
+    
+    try:
+        llm_client = OpenAIClient()
+        # Usaremos los ultimos 7 días con un tope de 20 mediciones para el LLM
+        seven_days_ago = datetime.now() - timedelta(days=7)
+        last_measurements = Measurement.objects.filter(
+            user=user,
+            recorded_at__gte=seven_days_ago
+        ).order_by('-recorded_at')[:20]  # Con max de 20 mediciones para el LLM
+        try:
+            user_profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            logger.error(f"UserProfile for user {user_id} not found")
+            raise Exception(f"UserProfile for user {user_id} not found")
+        recommendation_text = llm_client.obtener_recomendacion(user_profile, last_measurements)
+        
+        recommendation = Recommendation(user=user, model_output=recommendation_text)
+        recommendation.save()
+        return recommendation.id
+    
+    except Exception as e:
+        logger.error(f"Unexpected error creating recommendation for user {user_id}: {e}")
         return None

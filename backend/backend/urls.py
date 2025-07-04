@@ -18,12 +18,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from core.views import UserViewSet, UserProfileViewSet, MeasurementViewSet
+from core.views import UserViewSet, UserProfileViewSet, MeasurementViewSet, RecommendationViewSet
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"profiles", UserProfileViewSet, basename="profile")
 router.register(r"measurements", MeasurementViewSet, basename="measurement")
+router.register(r"recommendations", RecommendationViewSet, basename="recommendation")
 ## Agregar más rutas aquí
 
 urlpatterns = [
