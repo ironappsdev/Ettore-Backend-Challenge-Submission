@@ -73,3 +73,32 @@ class Measurement(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.type if self.type != MeasurementType.CUSTOM else self.type_other}: {self.value} {self.unit} at {self.recorded_at}"
+
+
+class Goal(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    user_input = models.TextField(blank=True, null=True)
+    model_output = models.TextField(blank=True, null=True)
+    model_name = models.CharField(max_length=20, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.model_output[:100]}"
+    
+
+class Notification(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"
+
+
+class Recommendation(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    model_output = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.model_output[:100]}"
