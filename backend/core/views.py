@@ -9,7 +9,7 @@ from core.serializers import (
     UserProfileSerializer,
     MeasurementSerializer,
 )
-from .tasks import test_task
+from .tasks import create_measurement
 
 
 # Create your views here.
@@ -35,9 +35,10 @@ class MeasurementViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        
-        measurement = serializer.instance
-        test_task.delay(user_id=measurement.user.id)
-        
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        validated_data = serializer.validated_data.copy()
+
+        if 'user' in validated_data:
+            del validated_data['user']
+
+        create_measurement.delay(request.user.id, validated_data)
+        return Response({'detail': 'Measurement creation scheduled.'}, status=status.HTTP_202_ACCEPTED)
