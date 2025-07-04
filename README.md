@@ -83,19 +83,15 @@ celery -A config worker --loglevel=info
 
 ---
 
-## 🔐 Autenticación
+### 🧪 Pruebas con clientes HTTP
 
-La API usa autenticación con token. Puedes obtener un token vía:
+Puedes probar la API usando:
 
-```bash
-POST /api/login/
-```
+- HTTPie (ver archivo `httpie_examples.md`)
+- [Bruno](https://www.usebruno.com/) – colección en `/test-clients/bruno/`
+- [Postman](https://www.postman.com/) – colección exportada en `/test-clients/postman/`
 
-Inclúyelo en los headers de tus requests:
-
-```http
-Authorization: Token tu_token_aquí
-```
+Elige el cliente que prefieras para interactuar con la API y agrega tus propias pruebas para los endpoints que desarrolles.
 
 ---
 

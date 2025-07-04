@@ -1,0 +1,21 @@
+meta {
+  name: Create Measurement
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8000/api/measurements/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "user": 1,
+    "type": "bp_sys",
+    "value": 150,
+    "unit": "mmHg",
+    "recorded_at": "2025-07-01T10:00:00Z"
+  }
+}

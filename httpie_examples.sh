@@ -15,11 +15,6 @@ http -a demo_user:demo1234 GET http://localhost:8000/api/profiles/
 # Listar mediciones
 http -a demo_user:demo1234 GET http://localhost:8000/api/measurements/
 
-
-# ==============================
-# EVALUATION TEST – endpoints a implementar
-# ==============================
-
 # Crear nueva medición
 http -a demo_user:demo1234 POST http://localhost:8000/api/measurements/ \
   user=1 \
@@ -27,6 +22,10 @@ http -a demo_user:demo1234 POST http://localhost:8000/api/measurements/ \
   value:=150 \
   unit="mmHg" \
   recorded_at="2025-07-01T10:00:00Z"
+
+# ==============================
+# EVALUATION TEST – endpoints a implementar
+# ==============================
 
 # Llamada al endpoint de recomendación LLM (a implementar)
 http -a demo_user:demo1234 POST http://localhost:8000/api/recommendation/ \
