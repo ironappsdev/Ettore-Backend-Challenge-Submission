@@ -34,7 +34,7 @@ cd ettore-backend-challenge
 
 ```bash
 python -m venv venv
-source venv/bin/activate  # o .\venv\Scripts\activate en Windows
+source venv/bin/activate  # o .\venv\Scripts\activate -- en Windows
 ```
 
 ### 3. Instala dependencias
@@ -121,6 +121,13 @@ Consulta el documento `enunciado.pdf` o visita el link entregado con las instruc
 - Comparte tu fork del repositorio con nosotros
 - Asegúrate de que el código esté bien documentado y siga las mejores prácticas
 - Asegúrate de usar commits claros y mensajes descriptivos
+- Asegúrate de definir tus librerías extras en `requirements.txt` con:
+
+```bash
+pip freeze > requirements.txt # En el directorio raíz del proyecto
+# o Windows:
+pip freeze | Out-File -Encoding UTF8 requirements.txt
+```
 
 ---
 
