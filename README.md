@@ -77,7 +77,7 @@ celery -A backend worker --loglevel=info
 
 Este repositorio incluye ejemplos de pruebas para facilitar el desarrollo:
 
-- `/httpie_examples.md`: comandos HTTPie listos para usar.
+- `/test-clients/httpie_examples.md`: comandos HTTPie listos para usar.
 - `/test-clients/bruno/`: colección compatible con Bruno.
 - `/test-clients/postman/`: colección exportable para Postman.
 
@@ -87,7 +87,7 @@ Puedes extenderlos con nuevos endpoints que desarrolles.
 
 ## 📁 Estructura relevante del repositorio
 
-[Agrega aquí una breve descripción de las carpetas y archivos desarroolados.]
+[Agrega aquí una breve descripción de las carpetas y archivos desarrollados.]
 
 ---
 
