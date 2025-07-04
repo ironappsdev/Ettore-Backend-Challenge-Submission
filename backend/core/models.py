@@ -80,6 +80,12 @@ class Goal(models.Model):
     user_input = models.TextField(blank=True, null=True)
     model_output = models.TextField(blank=True, null=True)
     model_name = models.CharField(max_length=20, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(blank=True, null=True)
+    target_value = models.FloatField(blank=True, null=True)
+    target_unit = models.CharField(max_length=20, blank=True, null=True)
+    target_type = models.CharField(max_length=20, blank=True, null=True)
+    target_description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.model_output[:100]}"

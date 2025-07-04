@@ -119,3 +119,37 @@ def create_recommendation(user_id):
     except Exception as e:
         logger.error(f"Unexpected error creating recommendation for user {user_id}: {e}")
         return None
+    
+
+@shared_task(max_retries=3)
+def create_goal(user_id, message):
+    """
+    Task para crear una meta personal.
+    """
+    # Simular 1 segundo de espera
+    time.sleep(1)
+    
+    if User.objects.filter(id=user_id).exists():
+        user = User.objects.get(id=user_id)
+    else:
+        logger.error(f"User {user_id} not found")
+        raise Exception(f"User {user_id} not found")
+    
+    llm_client = OpenAIClient()
+    # Usaremos los ultimos 7 días con un tope de 20 mediciones para el LLM
+    seven_days_ago = datetime.now() - timedelta(days=7)
+    last_measurements = Measurement.objects.filter(
+        user=user,
+        recorded_at__gte=seven_days_ago
+    ).order_by('-recorded_at')[:20]  # Con max de 20 mediciones para el LLM
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        logger.error(f"UserProfile for user {user_id} not found")
+        raise Exception(f"UserProfile for user {user_id} not found")
+
+
+    goal_response = llm_client.obtener_meta_personal(user, message, user_profile, last_measurements)
+    logger.info(f"Goal response: {goal_response}")
+
+    return None
