@@ -1,118 +1,67 @@
-# Ettore Backend Challenge
+# Ettore Backend Challenge Submission
 
-Bienvenido a la prueba técnica de backend para **Ettore**, nuestra plataforma de salud digital. Este repositorio contiene un proyecto Django preconfigurado que deberás extender con nuevas funcionalidades, lógica asincrónica y una integración básica con modelos de lenguaje (LLMs). Consulta el **Enunciado que te enviamos** para conocer las tareas completas a desarrollar.
-
----
-
-## ⚙️ Stack utilizado
-
-- Python 3.10+
-- Django 5+
-- Django REST Framework
-- Celery
-- Redis (como broker de tareas)
-- SQLite (base de datos local por simplicidad)
+Backend para la plataforma de salud digital Ettore. Permite gestionar usuarios, perfiles, mediciones, metas personalizadas y notificaciones simuladas, integrando recomendaciones de un modelo de lenguaje (LLM) y tareas asincrónicas.
 
 ---
 
-## ▶️ Instrucciones para correr el entorno
+## 🚀 Setup rápido
 
-### 1. Haz un fork del proyecto y clónalo
-
-```bash
-git clone https://github.com/[tu-usuario]/ettore-backend-challenge.git
-cd ettore-backend-challenge
-```
-
-### 2. Crea y activa un entorno virtual
-
-```bash
-python -m venv venv
-source venv/bin/activate  # o .\venv\Scripts\activate -- en Windows
-```
-
-### 3. Instala dependencias
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Crea el archivo `.env`
-
-```bash
-cp .env.example .env
-```
-
-Completa los valores necesarios, especialmente la clave API de tu proveedor LLM (OpenAI, Gemini, Together AI, etc.).
-
-> ⚠️ Asegúrate de NO commitear este archivo.
-
-### 5. Levanta Redis (si no lo tienes instalado)
-
-```bash
-docker run -d -p 6379:6379 redis
-```
-
-### 6. Ejecuta migraciones y datos de ejemplo
-
-```bash
-python manage.py migrate
-python manage.py init_dummy_data
-python manage.py createsuperuser  # (opcional, para acceder al admin)
-```
-
-### 7. Inicia el servidor y el worker de Celery
-
-```bash
-# Terminal 1
-python manage.py runserver
-
-# Terminal 2
-celery -A backend worker --loglevel=info
-```
+1. **Configura variables de entorno:**
+   - Edita `.env` con tu `OPENAI_API_KEY` y configura Redis:
+     - `CELERY_BROKER_URL=redis://localhost:6379/0`
+     - `CELERY_RESULT_BACKEND=redis://localhost:6379/0`
+2. **Levanta Redis:**
+   ```bash
+   docker run -d -p 6379:6379 redis
+   ```
+3. **Migraciones y datos demo:**
+   ```bash
+   python manage.py migrate
+   python manage.py init_dummy_data
+   ```
+4. **Arranca el servidor y Celery:**
+   ```bash
+   # Terminal 1
+   python manage.py runserver
+   # Terminal 2
+   celery -A backend worker --loglevel=info
+   ```
 
 ---
 
-## 🔍 Carpeta de pruebas
-
-Este repositorio incluye ejemplos de pruebas para facilitar el desarrollo:
-
-- `/test-clients/httpie_examples.md`: comandos HTTPie listos para usar.
-- `/test-clients/bruno/`: colección compatible con Bruno.
-- `/test-clients/postman/`: colección exportable para Postman.
-
-Puedes extenderlos con nuevos endpoints que desarrolles.
+## 🔑 Autenticación
+- Usuario: `demo_user`
+- Contraseña: `demo1234`
 
 ---
 
-## 📁 Estructura relevante del repositorio
+## 📚 Endpoints principales
 
-[Agrega aquí una breve descripción de las carpetas y archivos desarrollados.]
+- `/users/` - Usuarios
+- `/profiles/` - Perfiles
+
+- `/measurements/` - Mediciones
+  - **GET**: Lista todas las mediciones registradas.
+  - **POST**: Registra una nueva medición fisiológica. Dispara una tarea Celery que valida y guarda la medición. Si supera un threshold crítico, genera una notificación simulada y una recomendación personalizada usando el LLM. Responde 202 Accepted.
+
+- `/recommendations/` - Recomendaciones LLM
+  - **GET**: Lista las recomendaciones generadas para el usuario (puedes filtrar por `user_id`).
+  - **POST**: Solicita la generación de una nueva recomendación personalizada. Dispara una tarea Celery que consulta las últimas mediciones y el perfil, llama al LLM y guarda la recomendación. Responde 202 Accepted.
+    - **No requiere campos adicionales en el body.**
+
+- `/goals/` - Metas personalizadas
+  - **GET**: Lista las metas personalizadas creadas.
+  - **POST**: Crea una nueva meta personalizada a partir de un input libre (`message`). Dispara una tarea Celery que consulta el perfil y mediciones, llama al LLM usando function calling y crea la meta. Responde 202 Accepted.
+    - **Campo requerido:** `message` (texto libre describiendo la meta deseada).
+
+Todos requieren autenticación básica.
 
 ---
 
-## 🛠 Consideraciones adicionales
-
-- El sistema usa autenticación básica con `demo_user` / `demo1234`.
-- Las rutas DRF básicas para usuarios, perfiles y mediciones ya están definidas.
-- Debes agregar tu propia lógica para:
-  - Tareas Celery.
-  - Llamadas reales a un LLM.
-  - Validación y persistencia de metas personalizadas.
-  - Creación de notificaciones simuladas.
-
-Consulta el **Enunciado que te enviamos** para los detalles sobre estas funcionalidades.
+## 🧪 Pruebas rápidas
+- Usa los ejemplos en `api-tests/httpie_examples.sh`, `api-tests/bruno/` o `api-tests/postman/`.
 
 ---
 
-## 🧪 Entrega
-
-- Comparte tu fork del repositorio con nosotros.
-- Usa commits claros y descriptivos.
-- Si agregas nuevas dependencias, actualiza `requirements.txt`:
-
-```bash
-pip freeze > requirements.txt
-```
-
-¡Buena suerte!
+## Notas
+- No poseo formación médica. Los valores de threshold utilizados en este proyecto fueron generados por un LLM y tienen únicamente fines demostrativos para este ejercicio. No deben considerarse como referencias válidas para la práctica clínica ni para la toma de decisiones de salud.
