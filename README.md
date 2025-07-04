@@ -1,23 +1,17 @@
 # Ettore Backend Challenge
 
-Bienvenido/a a la prueba técnica de backend para **Ettore**, nuestra plataforma de salud digital. Este repositorio contiene un proyecto Django preconfigurado que deberás extender con nuevas funcionalidades, lógica asincrónica y una integración básica con modelos de lenguaje (LLMs).
-
----
-
-## 🚀 Objetivo
-
-Implementar un conjunto de funcionalidades que demuestren tus habilidades en modelado de datos, desarrollo de APIs REST, tareas asincrónicas con Celery y uso práctico de LLMs mediante API.
+Bienvenido a la prueba técnica de backend para **Ettore**, nuestra plataforma de salud digital. Este repositorio contiene un proyecto Django preconfigurado que deberás extender con nuevas funcionalidades, lógica asincrónica y una integración básica con modelos de lenguaje (LLMs). Consulta el **Enunciado que te enviamos** para conocer las tareas completas a desarrollar.
 
 ---
 
 ## ⚙️ Stack utilizado
 
 - Python 3.10+
-- Django 4+
+- Django 5+
 - Django REST Framework
 - Celery
-- Redis (broker)
-- SQLite (para facilitar la ejecución local)
+- Redis (como broker de tareas)
+- SQLite (base de datos local por simplicidad)
 
 ---
 
@@ -43,15 +37,15 @@ source venv/bin/activate  # o .\venv\Scripts\activate -- en Windows
 pip install -r requirements.txt
 ```
 
-### 4. Crea un archivo `.env`
+### 4. Crea el archivo `.env`
 
 ```bash
 cp .env.example .env
 ```
 
-Edita el archivo `.env` con tus claves personales, especialmente la clave de tu proveedor LLM.
+Completa los valores necesarios, especialmente la clave API de tu proveedor LLM (OpenAI, Gemini, Together AI, etc.).
 
-> ⚠️ Asegúrate de no subir este archivo a tu repositorio.
+> ⚠️ Asegúrate de NO commitear este archivo.
 
 ### 5. Levanta Redis (si no lo tienes instalado)
 
@@ -59,110 +53,66 @@ Edita el archivo `.env` con tus claves personales, especialmente la clave de tu 
 docker run -d -p 6379:6379 redis
 ```
 
-### 6. Ejecuta migraciones y servidor
+### 6. Ejecuta migraciones y datos de ejemplo
 
 ```bash
-# Aplica migraciones
 python manage.py migrate
-
-# Crea el superusuario
-python manage.py createsuperuser
-
-# Carga datos de ejemplo
 python manage.py init_dummy_data
+python manage.py createsuperuser  # (opcional, para acceder al admin)
+```
 
-# Inicia el servidor
+### 7. Inicia el servidor y el worker de Celery
+
+```bash
+# Terminal 1
 python manage.py runserver
+
+# Terminal 2
+celery -A backend worker --loglevel=info
 ```
 
-### 7. Corre el worker de Celery (en otra terminal)
+---
+
+## 🔍 Carpeta de pruebas
+
+Este repositorio incluye ejemplos de pruebas para facilitar el desarrollo:
+
+- `/httpie_examples.md`: comandos HTTPie listos para usar.
+- `/test-clients/bruno/`: colección compatible con Bruno.
+- `/test-clients/postman/`: colección exportable para Postman.
+
+Puedes extenderlos con nuevos endpoints que desarrolles.
+
+---
+
+## 📁 Estructura relevante del repositorio
+
+[Agrega aquí una breve descripción de las carpetas y archivos desarroolados.]
+
+---
+
+## 🛠 Consideraciones adicionales
+
+- El sistema usa autenticación básica con `demo_user` / `demo1234`.
+- Las rutas DRF básicas para usuarios, perfiles y mediciones ya están definidas.
+- Debes agregar tu propia lógica para:
+  - Tareas Celery.
+  - Llamadas reales a un LLM.
+  - Validación y persistencia de metas personalizadas.
+  - Creación de notificaciones simuladas.
+
+Consulta el **Enunciado que te enviamos** para los detalles sobre estas funcionalidades.
+
+---
+
+## 🧪 Entrega
+
+- Comparte tu fork del repositorio con nosotros.
+- Usa commits claros y descriptivos.
+- Si agregas nuevas dependencias, actualiza `requirements.txt`:
 
 ```bash
-celery -A config worker --loglevel=info
+pip freeze > requirements.txt
 ```
 
----
-
-### 🧪 Pruebas con clientes HTTP
-
-Puedes probar la API usando:
-
-- HTTPie (ver archivo `httpie_examples.md`)
-- [Bruno](https://www.usebruno.com/) – colección en `/test-clients/bruno/`
-- [Postman](https://www.postman.com/) – colección exportada en `/test-clients/postman/`
-
-Elige el cliente que prefieras para interactuar con la API y agrega tus propias pruebas para los endpoints que desarrolles.
-
----
-
-## 📚 Qué encontrarás en este repositorio
-
-- App principal `core/` con modelos base `Usuario` y `Medicion`
-- Carpeta `llm/` con función vacía `obtener_recomendacion()` que deberás implementar
-- Carpeta `celery/` lista para definir tareas
-- Modelo `NotificacionSimulada` para registrar alertas
-- Archivo `.http` o `curl_examples.sh` con ejemplos de requests
-- Archivo `.env.example` con las variables de entorno esperadas
-
----
-
-## 🧪 ¿Qué debes desarrollar?
-
-Consulta el documento `enunciado.pdf` o visita el link entregado con las instrucciones detalladas.
-
----
-
-## 📩 Entrega
-
-- Comparte tu fork del repositorio con nosotros
-- Asegúrate de que el código esté bien documentado y siga las mejores prácticas
-- Asegúrate de usar commits claros y mensajes descriptivos
-- Asegúrate de definir tus librerías extras en `requirements.txt` con:
-
-```bash
-pip freeze > requirements.txt # En el directorio raíz del proyecto
-# o Windows:
-pip freeze | Out-File -Encoding UTF8 requirements.txt
-```
-
----
-
-## 🧪 Ejemplos de uso con `curl`
-
-```bash
-# Reemplaza con tu token real una vez obtenido
-TOKEN="TU_TOKEN_AQUI"
-
-# ✅ Login para obtener token (solo si no lo tienes aún)
-curl -X POST http://localhost:8000/api/login/ \
-  -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "testpass"}'
-
-# ✅ Ingesta de una nueva medición
-curl -X POST http://localhost:8000/api/mediciones/ \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Token $TOKEN" \
-  -d '{"tipo": "presion", "valor": 142}'
-
-# ✅ Consulta de mediciones
-curl -X GET http://localhost:8000/api/mediciones/ \
-  -H "Authorization: Token $TOKEN"
-
-# ✅ Consultar recomendaciones desde LLM
-curl -X POST http://localhost:8000/api/recomendacion/ \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Token $TOKEN" \
-  -d '{"input": "¿Qué debería mejorar en mis hábitos?"}'
-
-# ✅ Crear una meta personal (si implementado)
-curl -X POST http://localhost:8000/api/metas/ \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Token $TOKEN" \
-  -d '{"tipo": "pasos_diarios", "valor_objetivo": 8000}'
-```
-
----
-
-¡Gracias por participar en este desafío! 💙
-
-Equipo Ettore
+¡Buena suerte!
