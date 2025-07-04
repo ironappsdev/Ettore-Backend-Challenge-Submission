@@ -44,13 +44,19 @@ def create_measurement(user_id, data):
         raise Exception(f"User {user_id} not found")
     
     try:
+        user_profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        logger.error(f"UserProfile for user {user_id} not found")
+        raise Exception(f"UserProfile for user {user_id} not found")
+    
+    try:
         measurement = Measurement(user=user, **data)
         measurement.full_clean()  # Validate model fields
         measurement.save()
         logger.info(f"Measurement created for user {user_id}: {measurement}")
 
         exceeds_threshold = False
-        threshold_helper = ThresholdHelper(measurement.type, measurement.value)
+        threshold_helper = ThresholdHelper(measurement.type, measurement.value, measurement.unit, user_profile)
         exceeds_threshold = threshold_helper.is_outside_threshold()
 
         if exceeds_threshold:
@@ -61,11 +67,7 @@ def create_measurement(user_id, data):
                 user=user,
                 recorded_at__gte=seven_days_ago
             ).order_by('-recorded_at')[:20]  # Con max de 20 mediciones para el LLM
-            try:
-                user_profile = UserProfile.objects.get(user=user)
-            except UserProfile.DoesNotExist:
-                logger.error(f"UserProfile for user {user_id} not found")
-                raise Exception(f"UserProfile for user {user_id} not found")
+            
             recommendation_text = llm_client.obtener_recomendacion(user_profile, last_measurements)
 
             #Save the recommendation
