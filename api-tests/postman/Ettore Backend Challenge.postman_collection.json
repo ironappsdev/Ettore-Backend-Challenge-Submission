@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "f5998972-4875-4591-89ba-edaef3373ced",
+		"_postman_id": "1272e8f0-8c88-4758-9a57-49b70111c325",
 		"name": "Ettore Backend Challenge",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "24250740"
+		"_exporter_id": "16247844"
 	},
 	"item": [
 		{
@@ -76,7 +76,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"user\": 1,\n  \"type\": \"bp_sys\",\n  \"value\": 150,\n  \"unit\": \"mmHg\",\n  \"recorded_at\": \"2025-07-01T10:00:00Z\"\n}",
+					"raw": "{\n  \"user\": 1,\n  \"type\": \"bp_sys\",\n  \"value\": 150,\n  \"unit\": \"mmHg\",\n  \"recorded_at\": \"2025-07-06T10:00:00Z\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -114,7 +114,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/llm-recommendation/",
+					"raw": "http://localhost:8000/api/recommendations/",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -122,7 +122,43 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"llm-recommendation",
+						"recommendations",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Recommendations",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "demo1234",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "demo_user",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/recommendations/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"recommendations",
 						""
 					]
 				}
@@ -135,16 +171,17 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "message",
+							"value": "quiero aumentar mi consumo diario de agua",
+							"type": "text"
 						}
-					}
+					]
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/llm-fc/",
+					"raw": "http://localhost:8000/api/goals/",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -152,7 +189,43 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"llm-fc",
+						"goals",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Goals",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "demo1234",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "demo_user",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/goals/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"goals",
 						""
 					]
 				}
