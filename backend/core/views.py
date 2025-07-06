@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from core.models import UserProfile, Measurement, Recommendation, Goal
+from core.models import UserProfile, Measurement, Recommendation, MetaPersonal
 from django.contrib.auth.models import User
 from core.serializers import (
     UserSerializer,
@@ -70,7 +70,7 @@ class RecommendationViewSet(viewsets.ModelViewSet):
 
 
 class GoalViewSet(viewsets.ModelViewSet):
-    queryset = Goal.objects.all()
+    queryset = MetaPersonal.objects.all()
     serializer_class = GoalSerializer
     permission_classes = [IsAuthenticated]
 

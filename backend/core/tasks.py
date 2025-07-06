@@ -1,6 +1,6 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
-from .models import Goal, Notification, Recommendation, Measurement, UserProfile
+from .models import NotificacionSimulada, Recommendation, Measurement, UserProfile
 import logging
 import time
 from .helpers import NotificationHelper, ThresholdHelper

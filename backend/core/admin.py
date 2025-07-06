@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Measurement, Goal, Notification, Recommendation
+from .models import UserProfile, Measurement, MetaPersonal, NotificacionSimulada, Recommendation
 
 # Register your models here.
 
@@ -14,14 +14,14 @@ class MeasurementAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Measurement._meta.get_fields()]
 
 
-@admin.register(Goal)
-class GoalAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Goal._meta.get_fields()]
+@admin.register(MetaPersonal)
+class MetaPersonalAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in MetaPersonal._meta.get_fields()]
 
 
-@admin.register(Notification)
-class NotificationAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Notification._meta.get_fields()]
+@admin.register(NotificacionSimulada)
+class NotificacionSimuladaAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in NotificacionSimulada._meta.get_fields()]
 
 
 @admin.register(Recommendation)

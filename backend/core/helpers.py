@@ -1,4 +1,4 @@
-from core.models import Notification, MeasurementType
+from core.models import NotificacionSimulada, MeasurementType
 import logging
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ class NotificationHelper:
         self.message = message
 
     def send_notification(self):
-        Notification.objects.create(
+        NotificacionSimulada.objects.create(
             user=self.user_id,
             title=self.title,
             message=self.message

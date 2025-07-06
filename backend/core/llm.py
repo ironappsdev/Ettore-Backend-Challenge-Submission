@@ -6,7 +6,7 @@ from core.prompts import (SYSTEM_PROMPT_GENERATE_RECOMMENDATION,
                           USER_PROMPT_GENERATE_RECOMMENDATION,
                           SYSTEM_PROMPT_GENERATE_GOAL,
                         )
-from core.models import Measurement, UserProfile, Goal
+from core.models import Measurement, UserProfile, MetaPersonal
 import json
 from dateutil.parser import parse as date_parse
 
@@ -139,7 +139,7 @@ class OpenAIClient:
                         pass
                 
                 # Crear la meta personal en la DB
-                goal = Goal(
+                goal = MetaPersonal(
                     user=user,
                     user_input=user_input,
                     model_output=message.function_call.arguments,

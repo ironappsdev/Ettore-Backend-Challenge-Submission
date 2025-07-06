@@ -75,7 +75,7 @@ class Measurement(models.Model):
         return f"{self.user.username} - {self.type if self.type != MeasurementType.CUSTOM else self.type_other}: {self.value} {self.unit} at {self.recorded_at}"
 
 
-class Goal(models.Model):
+class MetaPersonal(models.Model):
     user = models.ForeignKey(USER, on_delete=models.CASCADE)
     user_input = models.TextField(blank=True, null=True)
     model_output = models.TextField(blank=True, null=True)
@@ -91,7 +91,7 @@ class Goal(models.Model):
         return f"{self.user.username} - {self.model_output[:100]}"
     
 
-class Notification(models.Model):
+class NotificacionSimulada(models.Model):
     user = models.ForeignKey(USER, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     message = models.TextField()
